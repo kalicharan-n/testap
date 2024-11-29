@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Mapping Screen{% endblock %}
+
+{% block content %}
+<h1 class="title">Mapping Screen</h1>
+<form method="POST">
+    <div class="field">
+        <label class="label">Project</label>
+        <div class="control">
+            <input class="input" type="text" name="project" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Run ID</label>
+        <div class="control">
+            <input class="input" type="text" name="run_id" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Application Name</label>
+        <div class="control">
+            <input class="input" type="text" name="app_name" required>
+        </div>
+    </div>
+
+    <div class="control">
+        <button type="submit" class="button is-primary">Add Mapping</button>
+    </div>
+</form>
+
+<table class="table is-fullwidth">
+    <thead>
+        <tr>
+            <th>Project</th>
+            <th>Run ID</th>
+            <th>Application Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for mapping in mappings %}
+        <tr>
+            <td>{{ mapping[1] }}</td>
+            <td>{{ mapping[2] }}</td>
+            <td>{{ mapping[3] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Metric Configurations{% endblock %}
+
+{% block content %}
+<h1 class="title">Metric Configurations</h1>
+<form method="POST">
+    <div class="field">
+        <label class="label">API Endpoint</label>
+        <div class="control">
+            <input class="input" type="text" name="api_endpoint" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Parameters</label>
+        <div class="control">
+            <textarea class="textarea" name="parameters"></textarea>
+        </div>
+    </div>
+
+    <div class="control">
+        <button type="submit" class="button is-primary">Add Metric</button>
+    </div>
+</form>
+
+<table class="table is-fullwidth">
+    <thead>
+        <tr>
+            <th>API Endpoint</th>
+            <th>Parameters</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for config in configs %}
+        <tr>
+            <td>{{ config[1] }}</td>
+            <td>{{ config[2] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
