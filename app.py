@@ -20,13 +20,14 @@ def init_db():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS metric_config (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            metric_name TEXT,
             api_endpoint TEXT,
             parameters TEXT
         )
     ''')
     conn.commit()
     conn.close()
-
+    
 def fetch_all(table_name):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -64,9 +65,14 @@ def mapping_screen():
 @app.route('/metric-config', methods=['GET', 'POST'])
 def metric_config_screen():
     if request.method == 'POST':
+        metric_name = request.form['metric_name']
         api_endpoint = request.form['api_endpoint']
         parameters = request.form['parameters']
-        insert_row('metric_config', ['api_endpoint', 'parameters'], [api_endpoint, parameters])
+        insert_row(
+            'metric_config',
+            ['metric_name', 'api_endpoint', 'parameters'],
+            [metric_name, api_endpoint, parameters]
+        )
         return redirect('/metric-config')
     configs = fetch_all('metric_config')
     return render_template('metric_config_screen.html', configs=configs)

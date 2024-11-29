@@ -6,16 +6,23 @@
 <h1 class="title">Metric Configurations</h1>
 <form method="POST">
     <div class="field">
+        <label class="label">Metric Name</label>
+        <div class="control">
+            <input class="input" type="text" name="metric_name" placeholder="Enter Metric Name" required>
+        </div>
+    </div>
+
+    <div class="field">
         <label class="label">API Endpoint</label>
         <div class="control">
-            <input class="input" type="text" name="api_endpoint" required>
+            <input class="input" type="text" name="api_endpoint" placeholder="Enter API Endpoint URL" required>
         </div>
     </div>
 
     <div class="field">
         <label class="label">Parameters</label>
         <div class="control">
-            <textarea class="textarea" name="parameters"></textarea>
+            <textarea class="textarea" name="parameters" placeholder="Enter Parameters (if any)"></textarea>
         </div>
     </div>
 
@@ -27,6 +34,7 @@
 <table class="table is-fullwidth">
     <thead>
         <tr>
+            <th>Metric Name</th>
             <th>API Endpoint</th>
             <th>Parameters</th>
         </tr>
@@ -36,6 +44,7 @@
         <tr>
             <td>{{ config[1] }}</td>
             <td>{{ config[2] }}</td>
+            <td>{{ config[3] }}</td>
         </tr>
         {% endfor %}
     </tbody>
