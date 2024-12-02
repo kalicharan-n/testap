@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Mapping Settings{% endblock %}
+{% block content %}
+<h1 class="title">Mapping Settings</h1>
+
+<!-- Error Notification -->
+{% if error %}
+<div class="notification is-danger">
+    {{ error }}
+</div>
+{% endif %}
+
+<form method="POST" action="/mapping-settings">
+    <input type="hidden" name="mapping_id" id="mapping_id" value="">
+    <div class="field">
+        <label class="label">Domain</label>
+        <div class="control">
+            <select class="select" id="domain" name="domain" required>
+                <option value="">Select Domain</option>
+            </select>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label">Project</label>
+        <div class="control">
+            <select class="select" id="project" name="project" required>
+                <option value="">Select Project</option>
+            </select>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label">App Name</label>
+        <div class="control">
+            <select class="select" id="app_name" name="app_name" required>
+                <option value="">Select App Name</option>
+            </select>
+        </div>
+    </div>
+    <button class="button is-primary" type="submit">Save Mapping</button>
+</form>
+
+<h2 class="title mt-5">Existing Mappings</h2>
+<table class="table is-striped is-fullwidth">
+    <thead>
+        <tr>
+            <th>Domain</th>
+            <th>Project</th>
+            <th>App Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for mapping in mappings %}
+        <tr>
+            <td>{{ mapping[0] }}</td>
+            <td>{{ mapping[1] }}</td>
+            <td>{{ mapping[2] }}</td>
+            <td>
+                <button class="button is-small is-warning edit-button" data-id="{{ mapping[3] }}" data-domain="{{ mapping[0] }}" data-project="{{ mapping[1] }}" data-app-name="{{ mapping[2] }}">Edit</button>
+                <a class="button is-small is-danger" href="/delete-mapping/{{ mapping[3] }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    // Fetch domains dynamically
+    fetch('/api/domains')
+        .then(response => response.json())
+        .then(data => {
+            const domainDropdown = document.getElementById('domain');
+            data.forEach(domain => {
+                const option = document.createElement('option');
+                option.value = domain;
+                option.textContent = domain;
+                domainDropdown.appendChild(option);
+            });
+        });
+
+    // Fetch projects based on selected domain
+    document.getElementById('domain').addEventListener('change', function () {
+        const domain = this.value;
+        const projectDropdown = document.getElementById('project');
+        projectDropdown.innerHTML = '<option value="">Select Project</option>';
+        fetch(`/api/projects/${domain}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project;
+                    option.textContent = project;
+                    projectDropdown.appendChild(option);
+                });
+            });
+    });
+
+    // Fetch app names dynamically
+    fetch('/api/app-names')
+        .then(response => response.json())
+        .then(data => {
+            const appNameDropdown = document.getElementById('app_name');
+            data.forEach(appName => {
+                const option = document.createElement('option');
+                option.value = appName;
+                option.textContent = appName;
+                appNameDropdown.appendChild(option);
+            });
+        });
+
+    // Handle edit button click
+    document.querySelectorAll('.edit-button').forEach(button => {
+        button.addEventListener('click', function () {
+            document.getElementById('mapping_id').value = this.getAttribute('data-id');
+            document.getElementById('domain').value = this.getAttribute('data-domain');
+            document.getElementById('project').value = this.getAttribute('data-project');
+            document.getElementById('app_name').value = this.getAttribute('data-app-name');
+        });
+    });
+</script>
+{% endblock %}

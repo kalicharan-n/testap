@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Metrics Mapping{% endblock %}
+{% block content %}
+<h1 class="title">Metrics Mapping</h1>
+
+<!-- Error Notification -->
+{% if error %}
+<div class="notification is-danger">
+    {{ error }}
+</div>
+{% endif %}
+
+<form method="POST" action="/metrics-mapping">
+    <input type="hidden" name="metric_id" id="metric_id" value="">
+    <div class="field">
+        <label class="label">Metric Name</label>
+        <div class="control">
+            <input class="input" type="text" name="metric_name" id="metric_name" required>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label">API Endpoint</label>
+        <div class="control">
+            <input class="input" type="text" name="api_endpoint" id="api_endpoint" required>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label">Headers (JSON)</label>
+        <div class="control">
+            <textarea class="textarea" name="headers" id="headers"></textarea>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label">Body (JSON)</label>
+        <div class="control">
+            <textarea class="textarea" name="body" id="body"></textarea>
+        </div>
+    </div>
+    <button class="button is-primary" type="submit">Save Metric</button>
+</form>
+
+<h2 class="title mt-5">Existing Metrics</h2>
+<table class="table is-striped is-fullwidth">
+    <thead>
+        <tr>
+            <th>Metric Name</th>
+            <th>API Endpoint</th>
+            <th>Headers</th>
+            <th>Body</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for metric in metrics %}
+        <tr>
+            <td>{{ metric[1] }}</td>
+            <td>{{ metric[2] }}</td>
+            <td>{{ metric[3] }}</td>
+            <td>{{ metric[4] }}</td>
+            <td>
+                <button class="button is-small is-warning edit-button" 
+                        data-id="{{ metric[0] }}" 
+                        data-name="{{ metric[1] }}" 
+                        data-endpoint="{{ metric[2] }}" 
+                        data-headers="{{ metric[3] }}" 
+                        data-body="{{ metric[4] }}">Edit</button>
+                <a class="button is-small is-danger" href="/delete-metric/{{ metric[0] }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    document.querySelectorAll('.edit-button').forEach(button => {
+        button.addEventListener('click', async function () {
+            const id = this.getAttribute('data-id');
+            try {
+                // Fetch the metric data via GET request
+                const response = await fetch(`/edit-metric/${id}`);
+                const data = await response.json();
+
+                // Populate the form fields with the fetched data
+                document.getElementById('metric_id').value = data.id;
+                document.getElementById('metric_name').value = data.name;
+                document.getElementById('api_endpoint').value = data.endpoint;
+                document.getElementById('headers').value = data.headers;
+                document.getElementById('body').value = data.body;
+
+                // Scroll to form for better UX
+                document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                alert('Failed to fetch metric details. Please try again.');
+                console.error(error);
+            }
+        });
+    });
+</script>
+
+{% endblock %}

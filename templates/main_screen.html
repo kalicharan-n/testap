@@ -1,48 +1,21 @@
 {% extends "base.html" %}
-
 {% block title %}Main Screen{% endblock %}
-
 {% block content %}
-<h1 class="title">Main Screen</h1>
-<form action="/trigger" method="POST">
+<h1 class="title">Select Metrics</h1>
+<form method="POST" action="/trigger">
     <div class="field">
-        <label class="label">Select Application</label>
-        <div class="control">
-            <div class="select">
-                <select name="app_name" required>
-                    {% for mapping in mappings %}
-                    <option value="{{ mapping[3] }}">{{ mapping[3] }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
+        <label class="checkbox">
+            <input type="checkbox" id="select_all"> Select All
+        </label>
     </div>
-
     <div class="field">
-        <label class="label">Metrics</label>
-        <div class="control">
-            <label class="checkbox">
-                <input type="checkbox" id="select_all"> Select All
-            </label>
-            <br>
-            {% for metric in metrics %}
-            <label class="checkbox">
-                <input type="checkbox" name="metrics" value="{{ metric[1] }}"> {{ metric[1] }}
-            </label>
-            <br>
-            {% endfor %}
-        </div>
+        {% for metric in metrics %}
+        <label class="checkbox">
+            <input type="checkbox" name="metrics" value="{{ metric[0] }}"> {{ metric[0] }}
+        </label>
+        <br>
+        {% endfor %}
     </div>
-
-    <div class="control">
-        <button type="submit" class="button is-primary">Trigger</button>
-    </div>
+    <button class="button is-primary" type="submit">Trigger</button>
 </form>
-
-<script>
-    document.getElementById('select_all').addEventListener('change', function() {
-        let checkboxes = document.querySelectorAll('input[name="metrics"]');
-        checkboxes.forEach(cb => cb.checked = this.checked);
-    });
-</script>
 {% endblock %}
