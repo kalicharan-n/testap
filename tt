@@ -1,0 +1,46 @@
+<h2 class="title">Logs</h2>
+<div id="logs" class="box" style="height: 300px; overflow-y: scroll; border: 1px solid #ddd;">
+    <p>Logs will appear here...</p>
+</div>
+
+<script>
+    document.getElementById('metrics-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        
+        const logsContainer = document.getElementById('logs');
+        logsContainer.innerHTML = "<p>Processing started...</p>";
+        
+        const eventSource = new EventSource('/trigger');
+        
+        eventSource.onmessage = function (event) {
+            const log = document.createElement('p');
+            log.textContent = event.data;
+            logsContainer.appendChild(log);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+            
+            if (event.data === "Processing complete!") {
+                eventSource.close();
+            }
+        };
+    });
+</script>
+{% endblock %}
+
+
+
+
+
+# Trigger metric processing and stream logs
+@app.route('/trigger', methods=['POST'])
+def trigger_processing():
+    selected_metrics = request.form.getlist('metrics')
+
+    def generate_logs():
+        for i in range(1, 11):  # Simulate 10 steps of processing
+            time.sleep(1)  # Simulate delay
+            log = f"Processing step {i} for metrics: {', '.join(selected_metrics)}"
+            yield f"data: {log}\n\n"
+
+        yield "data: Processing complete!\n\n"
+
+    return Response(generate_logs(), content_type='text/event-stream')
